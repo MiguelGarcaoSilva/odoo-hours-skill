@@ -128,6 +128,6 @@ here, and the agent reads it as fact. Replace the examples.
    should print your active contracts.
 
 If the script says Odoo refused the key, it was revoked or expired; mint a
-new one, never search for an old one. If it says it cannot reach Odoo, the
-usual cause is the company VPN being off; ask the user to connect it and
-retry, rather than changing the configuration.
+new one, never search for an old one. Odoo is only reachable with the company
+VPN on: if the script says it cannot reach Odoo, ask the user to connect
+the VPN and retry, rather than changing the configuration.
