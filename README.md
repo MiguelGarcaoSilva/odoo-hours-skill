@@ -32,6 +32,10 @@ That is all for most servers. If yours hosts several databases, the script
 says so and asks for a second line, `ODOO_DB=<name>`. Environment variables
 of the same names also work and take precedence.
 
+If your Odoo is only reachable on the company network, connect the VPN
+before using the skill, same as for the browser. Without it the script
+stops with `cannot reach <your Odoo>`.
+
 ## Create your API key (once)
 
 The key is personal and gives the script exactly your Odoo permissions.
