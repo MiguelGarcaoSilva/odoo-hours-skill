@@ -4,7 +4,7 @@ A Claude Code skill that logs your hours in Odoo from the terminal: the
 right contract, the times you say, and a work description drafted from your
 day's git history. It also reads what you logged and fixes it.
 
-Odoo 15 has no MCP server (that arrived in Odoo 20), so the skill talks to
+Odoo versions before 20 have no MCP server, so the skill talks to
 Odoo's XML-RPC API with a personal API key. Stdlib Python 3.9+, nothing to
 install (Windows needs `pip install tzdata` for the time zone). Runs on
 macOS, Linux and Windows; only where the key is stored differs.
@@ -40,7 +40,7 @@ The key is personal and gives the script exactly your Odoo permissions.
    first: sign out, open `$ODOO_URL/web/login`, click **Reset Password**,
    enter your e-mail, follow the link in the e-mail. Google sign-in keeps
    working; the password is only for step 3.
-2. Open `$ODOO_URL/web?debug=1`. The `debug=1` part matters: in Odoo 15 the
+2. Open `$ODOO_URL/web?debug=1`. The `debug=1` part matters: in older Odoo versions the
    API Keys section only shows in developer mode.
 3. User menu (top right) → **Preferences** → tab **Account Security** →
    **New API Key**. Confirm with your Odoo password, give the key a name
