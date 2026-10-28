@@ -1,0 +1,19 @@
+# SkillSpector baseline: findings reviewed and accepted for this skill.
+# Scan with:  skillspector scan ./odoo-hours --no-llm --baseline .skillspector-baseline.yaml
+version: 2
+rules:
+  - id: "PE3"
+    reason: "By design: the script reads the user's own Odoo API key from the macOS keychain (security find-generic-password) or from a chmod-600 config file; it never writes or sends the key anywhere but the configured Odoo"
+  - id: "AST4"
+    reason: "subprocess.run with an explicit argument list and shell=False, calling only the macOS `security` tool; no user-controlled input reaches the command"
+  - id: "LP1"
+    message: "*'env'*"
+    reason: "Reads ODOO_URL / ODOO_DB / ODOO_LOGIN / ODOO_API_KEY from the environment; Claude Code's allowed-tools has no name for that capability"
+  - id: "LP3"
+    reason: "Tool scope is declared with allowed-tools in SKILL.md frontmatter"
+  - id: "RA2"
+    path: "README.md"
+    reason: "The config file holds the Odoo address, not session state"
+  - id: "AS3"
+    path: "README.md"
+    reason: "Tells the user to edit this skill's own SKILL.md, no other skill is read"

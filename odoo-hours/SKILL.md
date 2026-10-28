@@ -1,6 +1,7 @@
 ---
 name: odoo-hours
 description: Log the user's working hours in Odoo (the Network Management "Log Hours" model) on the right contract, at the times they say, with work descriptions drafted from the day's git history and session work; also read, summarize, fix and delete entries. Use whenever the user talks about logging, registering or putting in hours, in Portuguese or English ("loggar as horas", "registar horas", "meter as horas desta semana", "timesheet", "Odoo"), asks to fill a day, a week or a month on a contract, asks how many hours they have or how many are missing on a contract, or asks what they have logged or to correct a logged description, in any repo.
+allowed-tools: Bash(python3:*), Bash(git log:*), Bash(security add-generic-password:*)
 ---
 
 # Odoo hours
