@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Log and read your hours in Odoo (Network Management timesheet model).
 
-Stdlib only. Times on the command line are local (Europe/Lisbon); Odoo stores UTC.
+Stdlib only. Times on the command line are local (ODOO_TZ, else the computer's zone); Odoo stores UTC.
 
 Configuration, from the environment or from ~/.config/odoo-hours/config (KEY=value lines):
   ODOO_URL      your Odoo address, e.g. https://erp.example.com   (required)
   ODOO_DB       the database name; only needed when the server has more than one
-  ODOO_TZ       your local time zone, default Europe/Lisbon
+  ODOO_TZ       your time zone, e.g. Europe/Paris; default the computer's (required on Windows)
   ODOO_LOGIN    your Odoo login (e-mail)
   ODOO_API_KEY  your API key
       macOS: both can come from the keychain item `odoo-api-key` instead
@@ -73,7 +73,20 @@ def database() -> str:
 
 
 DB = database()
-TZ = ZoneInfo(setting("ODOO_TZ", "Europe/Lisbon"))
+
+
+def local_zone() -> ZoneInfo:
+    """ODOO_TZ if set; else the zone /etc/localtime links to; else ask for ODOO_TZ."""
+    name = setting("ODOO_TZ")
+    if not name:
+        path = os.path.realpath("/etc/localtime")
+        if "zoneinfo/" not in path:
+            sys.exit(f"cannot tell your time zone; set ODOO_TZ (e.g. Europe/Paris) in the environment or {CONFIG}")
+        name = path.rsplit("zoneinfo/", 1)[1]
+    return ZoneInfo(name)
+
+
+TZ = local_zone()
 ENTRY_FIELDS = ["start_time", "end_time", "duration_h", "contract", "work_description", "account", "project"]
 
 
@@ -220,10 +233,14 @@ def cmd_month(o: Odoo, a) -> None:
         # Two references: the contract's monthly figure, and for a contract with a
         # daily maximum, every weekday of the month at that figure ("full time").
         # Which one your contract is measured against is between you and the account.
-        out = f" / {c['monthly_hours']} h contract ({hours - c['monthly_hours']:+.1f})"
+        lo = max(first, dt.date.fromisoformat(c["start_date"]))
+        hi = min(last, dt.date.fromisoformat(c["end_date"]))
+        # A contract active for part of the month has no monthly delta: show its span.
+        if (lo, hi) == (first, last):
+            out = f" / {c['monthly_hours']} h contract ({hours - c['monthly_hours']:+.1f})"
+        else:
+            out = f" / {c['monthly_hours']} h contract, active {lo:%m-%d} to {hi:%m-%d} only"
         if c["maximum_daily_hours"]:
-            lo = max(first, dt.date.fromisoformat(c["start_date"]))
-            hi = min(last, dt.date.fromisoformat(c["end_date"]))
             full = weekdays(lo, hi) * c["maximum_daily_hours"]
             due = weekdays(lo, min(hi, today)) * c["maximum_daily_hours"]
             out += f"; {full:.0f} h full time ({hours - full:+.1f}), {due:.0f} h due to date"

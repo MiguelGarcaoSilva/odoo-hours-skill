@@ -21,67 +21,9 @@ git clone <this repo>
 cp -r odoo-hours-skill/odoo-hours ~/.claude/skills/odoo-hours
 ```
 
-Then tell it where your Odoo is: create the file `~/.config/odoo-hours/config`
-with one line, the address you open in the browser:
-
-```
-ODOO_URL=https://erp.example.com
-```
-
-That is all for most servers. If yours hosts several databases, the script
-says so and asks for a second line, `ODOO_DB=<name>`. Environment variables
-of the same names also work and take precedence.
-
-**Connect the company VPN first.** Odoo is only reachable on the company
-network, same as in the browser; without the VPN the script stops with
-`cannot reach <your Odoo>`.
-
-## Create your API key (once)
-
-The key is personal and gives the script exactly your Odoo permissions.
-
-1. **If you sign in with Google and never set an Odoo password**, set one
-   first: sign out, open `$ODOO_URL/web/login`, click **Reset Password**,
-   enter your e-mail, follow the link in the e-mail. Google sign-in keeps
-   working; the password is only for step 3.
-2. Open `$ODOO_URL/web?debug=1`. The `debug=1` part matters: in older Odoo versions the
-   API Keys section only shows in developer mode.
-3. User menu (top right) → **Preferences** → tab **Account Security** →
-   **New API Key**. Confirm with your Odoo password, give the key a name
-   (for example `claude-code`), click **Generate key**. Copy it now: Odoo
-   shows it only once.
-4. Store it. On **macOS**, in the keychain, with your Odoo login as the
-   account:
-
-   ```bash
-   security add-generic-password -a you@example.com -s odoo-api-key -w '<key>' -U
-   ```
-
-   On **Linux or Windows**, add two lines to the config file from Install,
-   so it reads:
-
-   ```
-   ODOO_URL=https://erp.example.com
-   ODOO_LOGIN=you@example.com
-   ODOO_API_KEY=<key>
-   ```
-
-   and make it readable only by you: `chmod 600 ~/.config/odoo-hours/config`
-   (the script reminds you if it is not).
-
-   Environment variables `ODOO_LOGIN` and `ODOO_API_KEY` work everywhere
-   and take precedence. Never paste the key into a chat or a file in a repo.
-5. Check:
-
-   ```bash
-   python3 ~/.claude/skills/odoo-hours/scripts/odoo_hours.py contracts
-   ```
-
-   It prints your active contracts. The first run may ask macOS to let
-   `python3` read the keychain item; "Always allow" settles it.
-
-To revoke a key: Preferences → Account Security → the trash icon next to it.
-Then repeat steps 3 and 4; `-U` replaces the stored one.
+Then follow [`odoo-hours/SETUP.md`](odoo-hours/SETUP.md): where your Odoo
+is, the company VPN, and your API key. The agent reads the same file when the
+key stops working.
 
 ## Make it yours
 
@@ -142,7 +84,7 @@ python3 $H update <id> --desc "Product page performance"
 python3 $H delete <id>
 ```
 
-Times are local (`ODOO_TZ`, default Europe/Lisbon). `add` refuses to
+Times are local (`ODOO_TZ`, default the computer's time zone). `add` refuses to
 overlap an existing entry unless you pass `--force`, and `--dry-run` shows
 what would be written without writing it.
 
@@ -151,7 +93,8 @@ what would be written without writing it.
 - Only `contract`, `work_description`, `start_time` and `end_time` are
   written; account, project and principal derive from the contract.
 - `month` prints two references: the contract's monthly figure, and for a
-  contract with a daily maximum, every weekday of the month at that figure.
-  Which one applies to you is between you and whoever manages the account.
+  contract with a daily maximum, every weekday of the month at that figure;
+  a contract active for part of the month shows its span instead. Which one
+  applies to you is between you and whoever manages the account.
 - The key is yours; the script never writes it anywhere. Revoke it in Odoo
   under Preferences → Account Security whenever you want.
